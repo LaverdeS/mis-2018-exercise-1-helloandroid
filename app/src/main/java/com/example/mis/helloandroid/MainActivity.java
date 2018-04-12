@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     String data;
     public static TextView result;
+    public static WebView webViewresult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,62 +40,30 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         editText=(EditText)findViewById(R.id.ask);
-        button=(Button) findViewById(R.id.butt);
+        button=(Button) findViewById(R.id.button);
         result =(TextView) findViewById(R.id.result);
+        webViewresult =(WebView) findViewById(R.id.webViewResult);
+        webViewresult.setWebViewClient(new WebViewClient());
+        webViewresult.getSettings().setJavaScriptEnabled(true);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //
                 try {
-                    String txtUrl=editText.getText().toString();
+                    String txtUrl = editText.getText().toString();
+                    webViewresult.loadUrl(txtUrl);
                     URL url = new URL(txtUrl);
-                    Fetch process = new Fetch();
-                    process.passContext(getApplicationContext());
+                    Fetch process = new Fetch(getApplicationContext());
                     process.execute(url);
-                    /*httpURLConnection = (HttpURLConnection) url.openConnection();
-                    InputStream inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    String line ="";
-                    while(line!=null){
-                        line = bufferedReader.readLine();
-                        data = data + line;
-                    }*/
                 } catch (MalformedURLException e) {
                     Toast toast = Toast.makeText(MainActivity.this, "Invalid URL", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0 ,0);
                     toast.show();
                 }
-                /*
-                catch (SyncFailedException e) {
-                    Toast toast = Toast.makeText(MainActivity.this, "Sync Failed", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0 ,0);
-                    toast.show();
-                }
-                catch (UnsupportedEncodingException e) {
-                    Toast toast = Toast.makeText(MainActivity.this, "Unsoported Enconding", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0 ,0);
-                    toast.show();
-                }
-                catch (ConnectTimeoutException e) {
-                    Toast toast = Toast.makeText(MainActivity.this, "Timeout", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0 ,0);
-                    toast.show();
-                }
-                catch (ConnectException e) {
-                    Toast toast = Toast.makeText(MainActivity.this, "Not posible to connect", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0 ,0);
-                    toast.show();
-                }
-                catch (IOException e) {
-                    Toast toast = Toast.makeText(MainActivity.this, "Generic Exception", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0 ,0);
-                    toast.show();
-                }
-*/
-                Toast toast = Toast.makeText(MainActivity.this, "hey there", Toast.LENGTH_SHORT);
+
+                /*Toast toast = Toast.makeText(MainActivity.this, "hey there", Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0 ,0);
-                toast.show();
+                toast.show();*/
             }
         });
     }

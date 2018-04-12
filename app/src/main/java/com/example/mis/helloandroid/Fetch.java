@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Gravity;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.text.Html;
 
 import org.apache.http.conn.ConnectTimeoutException;
 
@@ -20,20 +22,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownServiceException;
 
-public class Fetch extends AsyncTask<URL,Void,Void>{
+public class Fetch extends AsyncTask<URL,Void,String>{
     String data;
     private Context myContext;
-    public void passContext (Context context){
+    public Fetch(Context context){
         myContext = context;
     }
+
     @Override
-    protected Void doInBackground(URL...urls) {
+    protected String doInBackground(URL...urls) {
+        String id;
         try{
-            //System.out.print(urls[]);
             HttpURLConnection httpURLConnection = (HttpURLConnection) urls[0].openConnection();
             try {
-                //URL url=new URL();
-                //httpURLConnection =
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 String line = "";
@@ -41,49 +42,69 @@ public class Fetch extends AsyncTask<URL,Void,Void>{
                     line = bufferedReader.readLine();
                     data = data + line;
                 }
-            }catch (UnknownServiceException e) {
-                Toast toast = Toast.makeText(myContext, "Unknown Service", Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0 ,0);
-                toast.show();
-            }
-            finally{
+                id = "Not renderable";
+            } catch (UnknownServiceException e) {
+                id = "Unknown service";
+            } finally {
                 httpURLConnection.disconnect();
             }
-        } /*catch (MalformedURLException e) {
-            Toast toast = Toast.makeText(myContext, "Invalid URL", Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0 ,0);
-            toast.show();
+        } catch (MalformedURLException e) {
+            id = "Incorrect URL";
+        } catch (SyncFailedException e) {
+            id = "Cannot contact the server";
+        } catch (UnsupportedEncodingException e) {
+            id = "Unsupported Encoding of the selected link";
+        } catch (ConnectTimeoutException e) {
+            id = "Timeout";
+        } catch (ConnectException e) {
+            id = "Connection failed";
+        } catch (IOException e) {
+            id = "Generic error";
         }
-        catch (SyncFailedException e) {
-            Toast toast = Toast.makeText(myContext, "Sync Failed", Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0 ,0);
-            toast.show();
-        }
-        catch (UnsupportedEncodingException e) {
-            Toast toast = Toast.makeText(myContext, "Unsoported Enconding", Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0 ,0);
-            toast.show();
-        }
-        catch (ConnectTimeoutException e) {
-            Toast toast = Toast.makeText(myContext, "Timeout", Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0 ,0);
-            toast.show();
-        }
-        catch (ConnectException e) {
-            Toast toast = Toast.makeText(myContext, "Not posible to connect", Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0 ,0);
-            toast.show();
-        }*/
-        catch (IOException e) {
-            Toast toast = Toast.makeText(myContext, "Generic Exception", Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0 ,0);
-            toast.show();
-        }
-        return null;
+        return id;
     }
+
     @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
-        MainActivity.result.setText(this.data);
+    protected void onPostExecute(String id) {
+        super.onPostExecute(id);
+        switch (id) {
+            case "Incorrect URL":
+                Toast toast1 = Toast.makeText(myContext, id, Toast.LENGTH_SHORT);
+                toast1.setGravity(Gravity.CENTER, 0, 0);
+                toast1.show();
+                break;
+            case "Cannot contact the server":
+                Toast toast2 = Toast.makeText(myContext, id, Toast.LENGTH_SHORT);
+                toast2.setGravity(Gravity.CENTER, 0, 0);
+                toast2.show();
+                break;
+            case "Unsupported Encoding of the selected link":
+                Toast toast3 = Toast.makeText(myContext, id, Toast.LENGTH_SHORT);
+                toast3.setGravity(Gravity.CENTER, 0, 0);
+                toast3.show();
+                break;
+            case "Timeout":
+                Toast toast4 = Toast.makeText(myContext, id, Toast.LENGTH_SHORT);
+                toast4.setGravity(Gravity.CENTER, 0, 0);
+                toast4.show();
+                break;
+            case "Connection failed":
+                Toast toast5 = Toast.makeText(myContext, id, Toast.LENGTH_SHORT);
+                toast5.setGravity(Gravity.CENTER, 0, 0);
+                toast5.show();
+                break;
+            case "Generic error":
+                Toast toast6 = Toast.makeText(myContext, id, Toast.LENGTH_SHORT);
+                toast6.setGravity(Gravity.CENTER, 0, 0);
+                toast6.show();
+                break;
+            case "Unknown service":
+                Toast toast7 = Toast.makeText(myContext, id, Toast.LENGTH_SHORT);
+                toast7.setGravity(Gravity.CENTER, 0, 0);
+                toast7.show();
+                break;
+            default:
+                MainActivity.result.setText(Html.fromHtml(this.data));
+        }
     }
 }
